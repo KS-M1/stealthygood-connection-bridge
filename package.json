@@ -1,0 +1,8 @@
+{
+  "name": "stealthy-connection-bridge",
+  "scripts": {
+    "start": "cd server && npm start",
+    "build": "cd server && npm install"
+  },
+  "workspaces": ["server", "client"]
+}
