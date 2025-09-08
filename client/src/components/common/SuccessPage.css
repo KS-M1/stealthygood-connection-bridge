@@ -1,0 +1,100 @@
+/* SuccessPage.css
+   Positions the success StatusCard on the LEFT and the robot on the RIGHT.
+   Adds a smooth "bubble" animation for the robot and a soft shadow.
+*/
+
+/* Wrapper - ensure it fills the page so AnimatedBackground can show through */
+.success-page-root {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+/* Left fixed panel that contains the StatusCard.
+   Adjust left/right/top/width to match your desired placement. */
+.success-left-panel {
+  position: fixed;
+  top: 50%;
+  left: 20%;
+  transform: translateY(-50%);
+  width: 420px; /* match the app-panel width */
+  z-index: 1200; /* above background and robot */
+  pointer-events: auto;
+}
+
+/* Right side robot wrapper */
+.success-robot-wrapper {
+  position: fixed;
+  top: 50%;
+  right: 20%;
+  transform: translateY(-50%);
+  z-index: 800; /* below the StatusCard so card remains clickable */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* robot doesn't intercept clicks */
+}
+
+/* Robot image sizing and responsiveness */
+.success-robot-image {
+  width: 32vw; /* responsive: change as needed (desktop ~42%) */
+  max-width: 640px;
+  min-width: 220px;
+  transform-origin: center bottom;
+  animation: robotFloat 4.5s ease-in-out infinite;
+  display: block;
+  will-change: transform;
+}
+
+/* soft shadow under robot (separate element so it can animate) */
+.success-robot-shadow {
+  position: absolute;
+  bottom: -34px;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  width: 42vw;
+  max-width: 420px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 50%;
+  filter: blur(16px);
+  opacity: 0.45;
+  z-index: -1;
+  animation: shadowPulse 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* robot vertical float */
+@keyframes robotFloat {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-12px); }
+  100% { transform: translateY(0); }
+}
+
+/* shadow scale vs robot movement */
+@keyframes shadowPulse {
+  0%   { transform: scale(1); opacity: 0.45; filter: blur(16px); }
+  50%  { transform: scale(0.92); opacity: 0.3; filter: blur(18px); }
+  100% { transform: scale(1); opacity: 0.45; filter: blur(16px); }
+}
+
+/* Responsive tweaks */
+@media (max-width: 1024px) {
+  .success-left-panel { left: 4%; width: 380px; }
+  .success-robot-image { width: 36vw; max-width: 520px; }
+  .success-robot-shadow { width: 36vw; max-width: 360px; }
+}
+
+@media (max-width: 768px) {
+  /* On small screens, stack: keep StatusCard centered and hide/scale robot */
+  .success-left-panel {
+    position: static;
+    transform: none;
+    width: calc(100% - 32px);
+    margin: 20px auto;
+  }
+  .success-robot-wrapper {
+    display: none;
+  }
+  .success-robot-shadow { display: none; }
+}
