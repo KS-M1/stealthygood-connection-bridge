@@ -124,9 +124,9 @@ node server.js
 ---
 
 ## 👨‍💻 Author
-**Manish** (Patna, Bihar, India)  
-📧 Email: n8n.verified@gmail.com  
-📞 Phone: +91 93348 88899  
+**Kumar shivam** (Patna, Bihar, India)  
+📧 Email: n8n.official2025@gmail.com  
+📞 Phone: +91 6201769233  
 
 ---
 
