@@ -1,0 +1,137 @@
+/* StatusCard.css
+   Styles adapted to visually match the AppSelectionPanel appearance,
+   but scoped to .status-panel-card so we don't interfere with existing panels.
+*/
+
+.status-panel-card {
+  width: 100%;
+  height: fit-content;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  padding: 40px 30px;
+  box-sizing: border-box;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+
+  /* Reproduced gradient background similar to AppSelectionPanel */
+  background: linear-gradient(135deg, #4b0082 0%, #dd7afd 25%, #6500ea 50%, #8b5cf6 75%, #dd7afd 100%);
+  background-size: 200% 200%;
+  animation: statusGradientShift 12s ease-in-out infinite;
+}
+
+/* Slight entrance animation parity */
+@keyframes statusGradientShift {
+  0% { background-position: 0% 50%; transform: scale(1); }
+  25% { background-position: 50% 0%; }
+  50% { background-position: 100% 50%; transform: scale(1.01); }
+  75% { background-position: 50% 100%; }
+  100% { background-position: 0% 50%; transform: scale(1); }
+}
+
+/* Close button (top-right, circular) */
+.status-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.8);
+  font-size: 24px;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+.status-close-btn:hover { background-color: rgba(255,255,255,0.08); color: white; }
+
+/* Content container */
+.status-panel-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  text-align: center;
+}
+
+/* White circular icon container */
+.status-icon-circle {
+  width: 80px;
+  height: 80px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px auto;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+/* SVG icon sizing */
+.status-icon-svg { width: 80px; height: 80px; }
+
+/* Title & message */
+.status-title {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.status-message {
+  color: rgba(255,255,255,0.9);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0 0 18px 0;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Main action button */
+.status-action-btn {
+  width: 180px;
+  height: 44px;
+  background: linear-gradient(135deg, #dd7afd, #bf49e3);
+  color: white;
+  border: none;
+  border-radius: 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(221,122,253,0.3);
+}
+.status-action-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(221,122,253,0.4); }
+
+/* Footer text */
+.status-footer {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.8rem;
+  margin-top: 18px;
+}
+
+/* Success / Error variants (icon colors are inline SVG strokes, but we can use subtle bg differences) */
+.status-panel-card.status-success .status-icon-circle { background: white; }
+.status-panel-card.status-error .status-icon-circle { background: white; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .status-panel-card {
+    width: 95%;
+    max-width: 380px;
+    padding: 30px 20px;
+  }
+  .status-icon-circle { width: 70px; height: 70px; }
+  .status-title { font-size: 1.25rem; }
+  .status-action-btn { width: 160px; height: 42px; }
+}

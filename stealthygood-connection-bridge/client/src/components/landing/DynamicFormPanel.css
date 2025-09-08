@@ -1,0 +1,312 @@
+/* EXACT SAME STYLING AS APP SELECTION PANEL */
+.form-panel {
+  width: 400px;
+  height: fit-content;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  padding: 40px 30px;
+  
+  /* SAME GRADIENT BACKGROUND */
+  background: linear-gradient(135deg, #4b0082 0%, #dd7afd 25%, #6500ea 50%, #8b5cf6 75%, #dd7afd 100%);
+  background-size: 200% 200%;
+  background-attachment: fixed;
+  animation: gradientShift 12s ease-in-out infinite;
+  
+  border: none;
+  outline: none;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  box-sizing: border-box;
+}
+
+@keyframes gradientShift {
+  0% { 
+    background-position: 0% 50%;
+    transform: scale(1);
+  }
+  25% {
+    background-position: 50% 0%;
+  }
+  50% { 
+    background-position: 100% 50%;
+    transform: scale(1.01);
+  }
+  75% {
+    background-position: 50% 100%;
+  }
+  100% { 
+    background-position: 0% 50%;
+    transform: scale(1);
+  }
+}
+
+.form-panel > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* CLOSE BUTTON - SAME AS APP PANEL */
+.form-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 24px;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.form-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* BACK BUTTON */
+.form-back-btn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.form-back-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* FORM HEADER */
+.form-header {
+  text-align: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.form-app-icon {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px auto;
+  backdrop-filter: blur(10px);
+}
+
+.form-icon {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+}
+
+.form-title {
+  color: white;
+  font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+  font-weight: 600;
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+
+.form-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* FORM STYLING */
+.dynamic-form {
+  width: 100%;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.form-field {
+  width: 100%;
+}
+
+/* INPUT STYLING - NO EXTERNAL LABELS, PLACEHOLDERS ONLY */
+.form-input,
+.form-select {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 24px;
+  background-color: white;
+  color: #0f0e0e;
+  font-size: 0.9rem;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus,
+.form-select:focus {
+  background-color: #f8f8f8;
+  transform: translateY(-1px);
+}
+
+.form-input.error,
+.form-select.error {
+  background-color: #ffe6e6;
+  border: 1px solid #ff6b6b;
+}
+
+.form-input::placeholder {
+  color: rgba(15, 14, 14, 0.6);
+}
+
+.form-select option:first-child {
+  color: rgba(15, 14, 14, 0.6);
+}
+
+/* CHECKBOX STYLING */
+.checkbox-field {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.form-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkbox-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  margin-right: 12px;
+  position: relative;
+  transition: all 0.3s ease;
+  background: transparent;
+}
+
+.form-checkbox:checked + .checkbox-custom {
+  background-color: white;
+  border-color: white;
+}
+
+.form-checkbox:checked + .checkbox-custom::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #0f0e0e;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.checkbox-text {
+  line-height: 1.4;
+}
+
+/* SUBMIT BUTTON - MATCHING MAIN CTA */
+.form-submit-btn {
+  width: 100%;
+  height: 48px;
+  background: linear-gradient(135deg, #dd7afd, #bf49e3);
+  color: white;
+  border: none;
+  border-radius: 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(221, 122, 253, 0.3);
+}
+
+.form-submit-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #bf49e3, #a855f7);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(221, 122, 253, 0.4);
+}
+
+.form-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.form-submit-btn.submitting {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+/* ERROR STYLING */
+.form-error {
+  display: block;
+  color: #ff6b6b;
+  font-size: 0.75rem;
+  margin-top: 5px;
+  margin-left: 16px;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  .form-panel {
+    width: 95%;
+    max-width: 380px;
+    padding: 30px 20px;
+  }
+  
+  .form-title {
+    font-size: 1rem;
+  }
+  
+  .form-description {
+    font-size: 0.75rem;
+  }
+  
+  .form-input,
+  .form-select,
+  .form-submit-btn {
+    height: 44px;
+    border-radius: 22px;
+  }
+  
+  .form-fields {
+    gap: 12px;
+  }
+}
