@@ -1,5 +1,5 @@
-import React from 'react';
-import './NavigationBar.css';
+import React from "react";
+import "./NavigationBar.css";
 
 const NavigationBar = () => {
   return (
@@ -7,9 +7,9 @@ const NavigationBar = () => {
       {/* Logo */}
       <div className="nav-logo">
         <a href="https://stealthygood.com/">
-          <img 
-            src="/public/icons/Logo.png" 
-            alt="Stealthy Good" 
+          <img
+            src="/icons/Logo.png"
+            alt="Stealthy Good"
             className="logo-image"
           />
         </a>
@@ -17,16 +17,31 @@ const NavigationBar = () => {
 
       {/* Center Menu Items */}
       <div className="nav-center">
-        <a href="https://stealthygood.com/" className="nav-link">Home</a>
-        <a href="https://stealthygood.com/works" className="nav-link">Work</a>
-        <a href="https://stealthygood.com/blogs" className="nav-link">Blog</a>
-        <a href="https://stealthygood.com/about" className="nav-link">About</a>
-        <a href="https://stealthygood.com/#pricing-section" className="nav-link">Pricing</a>
+        <a href="https://stealthygood.com/" className="nav-link">
+          Home
+        </a>
+        <a href="https://stealthygood.com/works" className="nav-link">
+          Work
+        </a>
+        <a href="https://stealthygood.com/blogs" className="nav-link">
+          Blog
+        </a>
+        <a href="https://stealthygood.com/about" className="nav-link">
+          About
+        </a>
+        <a
+          href="https://stealthygood.com/#pricing-section"
+          className="nav-link"
+        >
+          Pricing
+        </a>
       </div>
 
       {/* Contact Button */}
       <div className="nav-contact">
-        <a href="https://stealthygood.com/contact" className="contact-button">Contact</a>
+        <a href="https://stealthygood.com/contact" className="contact-button">
+          Contact
+        </a>
       </div>
     </nav>
   );

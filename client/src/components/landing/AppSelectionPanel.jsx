@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import './AppSelectionPanel.css';
-import BrowseModal from './BrowseModal';
-import DynamicFormPanel from './DynamicFormPanel';
+import React, { useState } from "react";
+import "./AppSelectionPanel.css";
+import BrowseModal from "./BrowseModal";
+import DynamicFormPanel from "./DynamicFormPanel";
 
 const apps = [
-  { id: 'gmail', label: 'Connect with Gmail', icon: 'gmail' },
-  { id: 'hubspot', label: 'Connect with Hubspot', icon: 'hubspot' },
-  { id: 'outlook', label: 'Connect with Outlook', icon: 'outlook' },
+  { id: "gmail", label: "Connect with Gmail", icon: "gmail" },
+  { id: "hubspot", label: "Connect with Hubspot", icon: "hubspot" },
+  { id: "outlook", label: "Connect with Outlook", icon: "outlook" },
   { id: "streak", label: "Connect with Streak", icon: "streak" },
 ];
 
@@ -46,13 +46,13 @@ const AppSelectionPanel = ({ onClose, onBrowseMore }) => {
   };
 
   const handleFormSubmit = (app, formData) => {
-    console.log('Integration successful!', { app, formData });
+    console.log("Integration successful!", { app, formData });
     // Here you would typically:
     // 1. Send data to your backend
     // 2. Show success message
     // 3. Update UI to show connected state
     // 4. Close the form
-    
+
     // For now, just close the form
     setTimeout(() => {
       setShowForm(false);
@@ -77,22 +77,26 @@ const AppSelectionPanel = ({ onClose, onBrowseMore }) => {
   return (
     <>
       <div className="app-selection-panel">
-        <button className="close-btn" onClick={onClose} aria-label="Close panel">
+        <button
+          className="close-btn"
+          onClick={onClose}
+          aria-label="Close panel"
+        >
           ×
         </button>
-        
+
         <h2 className="panel-title">Choose an app to connect</h2>
-        
+
         <div className="app-list">
-          {apps.map(app => (
-            <button 
-              key={app.id} 
+          {apps.map((app) => (
+            <button
+              key={app.id}
               className="app-button"
               onClick={() => handleAppClick(app)}
             >
               <div className="app-icon-section">
-                <img 
-                  src={`/src/assets/icons/${app.icon}.svg`} 
+                <img
+                  src={`/icons/${app.icon}.svg`}
                   alt={`${app.label} icon`}
                   className="app-icon"
                 />
@@ -103,19 +107,19 @@ const AppSelectionPanel = ({ onClose, onBrowseMore }) => {
             </button>
           ))}
         </div>
-        
+
         <div className="separator">or</div>
-        
+
         <button className="browse-more-btn" onClick={handleBrowseMore}>
           Browse more integrations
         </button>
-        
+
         <p className="panel-footer">
           For any inquiries, please reach out to your administration.
         </p>
       </div>
 
-      <BrowseModal 
+      <BrowseModal
         isOpen={showBrowseModal}
         onClose={handleModalClose}
         onSelectApp={handleSelectApp}
