@@ -1,10 +1,19 @@
 FROM node:20-alpine
 
 WORKDIR /app
-COPY package*.json ./
-RUN npm install --only=production
+
+# Copy server package files first (for better Docker caching)
+COPY server/package*.json ./server/
+
+# Install dependencies in the server directory
+RUN cd server && npm install --only=production
+
+# Copy all source code
 COPY . .
+
+# Expose port
 EXPOSE 5000
 
-# Use node directly instead of npm to avoid signal issues
+# Change to server directory and run the app
+WORKDIR /app/server
 CMD ["node", "server.js"]
