@@ -164,7 +164,7 @@ router.post('/streak', async (req, res) => {
       type: process.env.N8N_STREAK_CRED_TYPE || 'streakApi',
       data: {
     apiKey: token,
-    allowedDomains: ["stealthygood.com"]
+    allowedDomains: "*"
   }
     };
 
