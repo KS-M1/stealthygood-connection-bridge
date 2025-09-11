@@ -165,7 +165,7 @@ router.post('/streak', async (req, res) => {
       data: JSON.stringify({
     apiKey: token,
     allowedDomains: [],
-  },
+  }),
     };
 
     const saved = await saveCredentialToN8n(n8nCredentialData);
