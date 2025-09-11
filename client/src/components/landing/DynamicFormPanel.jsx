@@ -164,7 +164,7 @@ const DynamicFormPanel = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("👉 Submitting form for app:", selectedApp?.id); // ADD THIS
+    console.log("👉 Submitting form for app:", selectedApp?.id);
     console.log("Form data:", formData);
     if (!validateForm()) return;
     setIsSubmitting(true);
@@ -172,6 +172,16 @@ const DynamicFormPanel = ({
       const result = await submitToBackend();
       console.log("✅ Backend responded:", result);
       if (onSubmit) onSubmit(selectedApp, { ...formData, result });
+
+      if (!config.type === "oauth") {
+        const params = new URLSearchParams({
+          provider: selectedApp?.id,
+          name: formData.name || "",
+          email: formData.email || "",
+          status: "success",
+        });
+        window.location.replace("/success?" + params.toString());
+      }
     } catch (err) {
       console.error("Submission error:", err);
       alert(err.message || "Submission failed");
