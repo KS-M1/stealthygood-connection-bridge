@@ -173,7 +173,7 @@ const DynamicFormPanel = ({
       console.log("✅ Backend responded:", result);
       if (onSubmit) onSubmit(selectedApp, { ...formData, result });
 
-      if (!config.type === "oauth") {
+      if (config.type !== "oauth") {
         const params = new URLSearchParams({
           provider: selectedApp?.id,
           name: formData.name || "",
