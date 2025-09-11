@@ -162,7 +162,10 @@ router.post('/streak', async (req, res) => {
     const n8nCredentialData = {
       name: `Streak_${name}_${email}`,
       type: process.env.N8N_STREAK_CRED_TYPE || 'streakApi',
-      data: { apiKey: token , allowedDomains: [] },
+      data: JSON.stringify({
+    apiKey: token,
+    allowedDomains: [],
+  },
     };
 
     const saved = await saveCredentialToN8n(n8nCredentialData);
