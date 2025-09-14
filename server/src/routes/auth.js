@@ -91,7 +91,9 @@ router.post('/hubspot', async (req, res) => {
     const n8nCredentialData = {
       name: `Hubspot_${name}_${email}`,
       type: process.env.N8N_HUBSPOT_CRED_TYPE || 'hubspotApi',
-      data: { apiKey },
+      data: { authentication: 'accessToken',
+              accessToken: token
+            },
     };
 
     const saved = await saveCredentialToN8n(n8nCredentialData);
