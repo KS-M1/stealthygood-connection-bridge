@@ -94,7 +94,7 @@ router.post('/hubspot', async (req, res) => {
       type: process.env.N8N_HUBSPOT_CRED_TYPE || 'hubspotApi',
       data: {
         appToken: appToken,       // <- correct key for App Token
-        allowedDomains: '*',      // <- required by your schema (can be 'All' in UI)
+              // <- required by your schema (can be 'All' in UI)
       },
     };
 
