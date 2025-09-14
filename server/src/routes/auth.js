@@ -93,7 +93,7 @@ router.post('/hubspot', async (req, res) => {
       // If you overrode this via env, keep it. Otherwise default works on most n8n builds.
       type: process.env.N8N_HUBSPOT_CRED_TYPE || 'hubspotApi',
       data: {
-        appToken: appToken,       // <- correct key for App Token
+        apiKey: appToken,       // <- correct key for App Token
         allowedDomains: '*',      // <- required by your schema (can be 'All' in UI)
       },
     };
