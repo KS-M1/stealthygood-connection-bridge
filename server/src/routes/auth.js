@@ -92,7 +92,7 @@ router.post('/hubspot', async (req, res) => {
       name: `Hubspot_${name}_${email}`,
       type: process.env.N8N_HUBSPOT_CRED_TYPE || 'hubspotApi',
       data: { authentication: 'accessToken',
-              accessToken: token
+              accessToken: apiKey
             },
     };
 
