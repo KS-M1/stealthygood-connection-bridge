@@ -70,49 +70,51 @@ router.post('/gmail', (req, res) => {
   });
 });
 
-// HubSpot API integration route - UPDATED
+// HubSpot API integration route - UPDATED (App Token schema)
 router.post('/hubspot', async (req, res) => {
   console.log("👉 HubSpot route hit with body:", req.body);
   try {
     const { name, email } = req.body;
-    const apiKey = req.body.apiKey || req.body.apiToken; // accept both
+    const appToken = (req.body.apiToken || req.body.apiKey || '').trim(); // keep frontend as-is
 
-    if (!apiKey) {
-      console.log("❌ No HubSpot API key provided");
-      return res.json({ 
-        success: false, 
-        message: 'HubSpot API key is required',
+    if (!appToken) {
+      console.log("❌ No HubSpot token provided");
+      return res.json({
+        success: false,
+        message: 'HubSpot Private App token is required',
         provider: 'hubspot',
-        userInfo: { name, email }
+        userInfo: { name, email },
       });
     }
 
-    console.log("✅ Got HubSpot API key, saving to n8n...");
+    console.log("✅ Got HubSpot app token, saving to n8n...");
     const n8nCredentialData = {
-      name: `Hubspot_${name}_${email}`,
+      name: `Hubspot_${name || 'unknown'}_${email || 'unknown'}`,
+      // If you overrode this via env, keep it. Otherwise default works on most n8n builds.
       type: process.env.N8N_HUBSPOT_CRED_TYPE || 'hubspotApi',
-      data: { authentication: 'accessToken',
-              accessToken: apiKey
-            },
+      data: {
+        appToken: appToken,       // <- correct key for App Token
+        allowedDomains: '*',      // <- required by your schema (can be 'All' in UI)
+      },
     };
 
     const saved = await saveCredentialToN8n(n8nCredentialData);
     console.log("🎉 HubSpot credentials saved to n8n:", saved);
 
-    res.json({
+    return res.json({
       success: true,
-      message: 'HubSpot API key saved successfully to n8n',
+      message: 'HubSpot App Token saved successfully to n8n',
       provider: 'hubspot',
       userInfo: { name, email },
       credentialId: saved.id,
     });
   } catch (error) {
     console.error('HubSpot save error:', error.response?.data || error.message);
-    res.json({
+    return res.json({
       success: false,
       message: `Failed to save HubSpot credentials: ${error.response?.data?.message || error.message}`,
       provider: 'hubspot',
-      userInfo: { name: email } = req.body
+      userInfo: { name: req.body.name, email: req.body.email }, // fix the previous bug
     });
   }
 });
