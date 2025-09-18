@@ -249,7 +249,8 @@ router.post('/callback', async (req, res) => {
             token_type: tokens.token_type || 'Bearer',
             expires_in: tokens.expires_in,
           },
-          
+          sendAdditionalBodyProperties: false,
+          additionalBodyProperties: {}
         },
       };
     }  else if (provider === 'outlook') {
