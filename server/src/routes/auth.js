@@ -253,7 +253,7 @@ router.post('/callback', async (req, res) => {
           additionalBodyProperties: {}
         },
       };
-    } } else if (provider === 'outlook') {
+    }  else if (provider === 'outlook') {
   // Microsoft token exchange (x-www-form-urlencoded)
   try {
     tokens = await postForm('https://login.microsoftonline.com/common/oauth2/v2.0/token', {
