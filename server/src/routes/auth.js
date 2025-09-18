@@ -272,16 +272,15 @@ router.post('/callback', async (req, res) => {
     return res.json({ success: false, message: 'Failed to get access token from Microsoft' });
   }
 
-  n8nPayload = {
+ n8nPayload = {
     name: `Outlook_${state?.name || ''}_${state?.email || ''}`,
-    type: 'microsoftOAuth2Api', // Changed from microsoftOutlookOAuth2Api
+    type: 'microsoftOAuth2Api', // This is the correct type
     data: {
       clientId: process.env.MS_CLIENT_ID,
       clientSecret: process.env.MS_CLIENT_SECRET,
-      // Add these required fields
-      allowedDomains: "*", // or specify specific domains
-      userPrincipalName: state?.email || "", // User's email from state
-      resource: 'https://graph.microsoft.com/', // Microsoft Graph resource
+      // These are the EXACT field names n8n expects for Microsoft OAuth2
+      allowedDomains: "All", // Must be "All" (string), not "*"
+      // Remove userPrincipalName - it's not in the base credential
       oauthTokenData: {
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
