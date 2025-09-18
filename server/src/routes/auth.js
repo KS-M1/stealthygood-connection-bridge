@@ -253,43 +253,46 @@ router.post('/callback', async (req, res) => {
           additionalBodyProperties: {}
         },
       };
-    } else if (provider === 'outlook') {
-      // Microsoft token exchange (x-www-form-urlencoded)
-      try {
-        tokens = await postForm('https://login.microsoftonline.com/common/oauth2/v2.0/token', {
-          client_id: process.env.MS_CLIENT_ID,
-          client_secret: process.env.MS_CLIENT_SECRET,
-          code,
-          grant_type: 'authorization_code',
-          redirect_uri: process.env.MS_REDIRECT_URI,
-        });
-      } catch (err) {
-        console.error('Microsoft token exchange error:', err.response?.data || err.message);
-        return res.json({ success: false, message: 'Failed to exchange code for Microsoft tokens' });
-      }
+    } } else if (provider === 'outlook') {
+  // Microsoft token exchange (x-www-form-urlencoded)
+  try {
+    tokens = await postForm('https://login.microsoftonline.com/common/oauth2/v2.0/token', {
+      client_id: process.env.MS_CLIENT_ID,
+      client_secret: process.env.MS_CLIENT_SECRET,
+      code,
+      grant_type: 'authorization_code',
+      redirect_uri: process.env.MS_REDIRECT_URI,
+    });
+  } catch (err) {
+    console.error('Microsoft token exchange error:', err.response?.data || err.message);
+    return res.json({ success: false, message: 'Failed to exchange code for Microsoft tokens' });
+  }
 
-      if (!tokens.access_token) {
-        return res.json({ success: false, message: 'Failed to get access token from Microsoft' });
-      }
+  if (!tokens.access_token) {
+    return res.json({ success: false, message: 'Failed to get access token from Microsoft' });
+  }
 
-      n8nPayload = {
-        name: `Outlook_${state?.name || ''}_${state?.email || ''}`,
-        type: process.env.N8N_OUTLOOK_CRED_TYPE || 'microsoftOutlookOAuth2Api',
-        data: {
-          clientId: process.env.MS_CLIENT_ID,
-          clientSecret: process.env.MS_CLIENT_SECRET,
-          oauthTokenData: {
-            access_token: tokens.access_token,
-            refresh_token: tokens.refresh_token,
-            scope: tokens.scope,
-            token_type: tokens.token_type || 'Bearer',
-            expires_in: tokens.expires_in,
-          },
-          sendAdditionalBodyProperties: false,
-          additionalBodyProperties: {}
-        },
-      };
-    } else {
+  n8nPayload = {
+    name: `Outlook_${state?.name || ''}_${state?.email || ''}`,
+    type: 'microsoftOAuth2Api', // Changed from microsoftOutlookOAuth2Api
+    data: {
+      clientId: process.env.MS_CLIENT_ID,
+      clientSecret: process.env.MS_CLIENT_SECRET,
+      // Add these required fields
+      allowedDomains: "*", // or specify specific domains
+      userPrincipalName: state?.email || "", // User's email from state
+      resource: 'https://graph.microsoft.com/', // Microsoft Graph resource
+      oauthTokenData: {
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+        scope: tokens.scope || process.env.MS_SCOPE,
+        token_type: tokens.token_type || 'Bearer',
+        expires_in: tokens.expires_in,
+      }
+    },
+  };
+}
+ else {
       return res.json({ success: false, message: 'Unknown provider in callback' });
     }
 
