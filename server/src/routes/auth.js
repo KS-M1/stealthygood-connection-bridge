@@ -240,6 +240,7 @@ router.post('/callback', async (req, res) => {
         name: `Gmail_${state?.name || ''}_${state?.email || ''}`,
         type: process.env.N8N_GMAIL_CRED_TYPE || 'gmailOAuth2',
         data: {
+          allowedDomains: "All",
           clientId: process.env.GOOGLE_CLIENT_ID,
           clientSecret: process.env.GOOGLE_CLIENT_SECRET,
           oauthTokenData: {
