@@ -133,6 +133,7 @@ router.post('/outlook', (req, res) => {
     `scope=${encodeURIComponent(msScope)}&` +
     `response_type=code&` +
     `response_mode=query&` +
+    `access_type=offline&` + // added access_type=offline
     //`prompt=consent&` +  encourage refresh token issuance
     `state=${encodeURIComponent(JSON.stringify({ name, email, provider: 'outlook' }))}`;
 
