@@ -23,33 +23,12 @@ const saveCredentialToN8n = async (payload) => {
 
 // Internal REST API — no strict schema validation, accepts oauthTokenData.
 // Use for OAuth2 credentials (Gmail, Outlook) where tokens must be stored.
-// Tries the existing API key first (works on most self-hosted n8n instances).
-// Falls back to email/password login only if the API key is rejected (401/403).
 const saveCredentialViaInternalApi = async (payload) => {
   if (!process.env.N8N_API_URL || !process.env.N8N_API_KEY) {
     throw new Error('n8n API configuration missing');
   }
 
-  // Attempt 1: API key on the internal REST endpoint (works on most self-hosted n8n)
-  try {
-    const { data } = await axios.post(`${N8N_BASE}/rest/credentials`, payload, {
-      headers: { 'Content-Type': 'application/json', 'X-N8N-API-KEY': process.env.N8N_API_KEY },
-    });
-    return data;
-  } catch (err) {
-    const status = err.response?.status;
-    if (status !== 401 && status !== 403) throw err; // unexpected error — surface it
-    // API key not accepted on /rest/ — fall through to login
-  }
-
-  // Attempt 2: session login (requires N8N_ADMIN_EMAIL + N8N_ADMIN_PASSWORD in .env)
-  if (!process.env.N8N_ADMIN_EMAIL || !process.env.N8N_ADMIN_PASSWORD) {
-    throw new Error(
-      'Could not authenticate with n8n internal API. ' +
-      'Add N8N_ADMIN_EMAIL and N8N_ADMIN_PASSWORD to your .env as a fallback.'
-    );
-  }
-
+  // Login with admin credentials to get a session cookie
   const loginRes = await axios.post(
     `${N8N_BASE}/rest/login`,
     { emailOrLdapLoginId: process.env.N8N_ADMIN_EMAIL, password: process.env.N8N_ADMIN_PASSWORD },
@@ -319,11 +298,11 @@ router.post('/callback', async (req, res) => {
 
   n8nPayload = {
     name: `Outlook_${state?.name || ''}_${state?.email || ''}`,
-    // microsoftOutlookOAuth2Api is the correct type for the Outlook node
-    type: 'microsoftOutlookOAuth2Api',
+    type: process.env.N8N_OUTLOOK_CRED_TYPE || 'microsoftOAuth2Api',
     data: {
       clientId: process.env.MS_CLIENT_ID,
       clientSecret: process.env.MS_CLIENT_SECRET,
+      scope: process.env.MS_SCOPE,
       oauthTokenData: {
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
