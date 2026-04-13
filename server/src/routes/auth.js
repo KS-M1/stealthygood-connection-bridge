@@ -9,13 +9,61 @@ const N8N_HEADERS = {
   'Content-Type': 'application/json',
 };
 
+// Public API — strict schema validation, only schema-defined fields allowed.
+// Use for simple credentials (HubSpot App Token, Streak, etc.)
 const saveCredentialToN8n = async (payload) => {
   if (!process.env.N8N_API_URL || !process.env.N8N_API_KEY) {
     throw new Error('n8n API configuration missing');
   }
-
   const { data } = await axios.post(`${N8N_BASE}/api/v1/credentials`, payload, {
     headers: N8N_HEADERS,
+  });
+  return data;
+};
+
+// Internal REST API — no strict schema validation, accepts oauthTokenData.
+// Use for OAuth2 credentials (Gmail, Outlook) where tokens must be stored.
+// Tries the existing API key first (works on most self-hosted n8n instances).
+// Falls back to email/password login only if the API key is rejected (401/403).
+const saveCredentialViaInternalApi = async (payload) => {
+  if (!process.env.N8N_API_URL || !process.env.N8N_API_KEY) {
+    throw new Error('n8n API configuration missing');
+  }
+
+  // Attempt 1: API key on the internal REST endpoint (works on most self-hosted n8n)
+  try {
+    const { data } = await axios.post(`${N8N_BASE}/rest/credentials`, payload, {
+      headers: { 'Content-Type': 'application/json', 'X-N8N-API-KEY': process.env.N8N_API_KEY },
+    });
+    return data;
+  } catch (err) {
+    const status = err.response?.status;
+    if (status !== 401 && status !== 403) throw err; // unexpected error — surface it
+    // API key not accepted on /rest/ — fall through to login
+  }
+
+  // Attempt 2: session login (requires N8N_ADMIN_EMAIL + N8N_ADMIN_PASSWORD in .env)
+  if (!process.env.N8N_ADMIN_EMAIL || !process.env.N8N_ADMIN_PASSWORD) {
+    throw new Error(
+      'Could not authenticate with n8n internal API. ' +
+      'Add N8N_ADMIN_EMAIL and N8N_ADMIN_PASSWORD to your .env as a fallback.'
+    );
+  }
+
+  const loginRes = await axios.post(
+    `${N8N_BASE}/rest/login`,
+    { emailOrLdapLoginId: process.env.N8N_ADMIN_EMAIL, password: process.env.N8N_ADMIN_PASSWORD },
+    { withCredentials: true }
+  );
+
+  const setCookie = loginRes.headers['set-cookie'];
+  if (!setCookie || !setCookie.length) {
+    throw new Error('n8n login succeeded but no session cookie was returned');
+  }
+  const cookieHeader = setCookie.map(c => c.split(';')[0]).join('; ');
+
+  const { data } = await axios.post(`${N8N_BASE}/rest/credentials`, payload, {
+    headers: { 'Content-Type': 'application/json', Cookie: cookieHeader },
   });
   return data;
 };
@@ -90,11 +138,10 @@ router.post('/hubspot', async (req, res) => {
     console.log("✅ Got HubSpot app token, saving to n8n...");
     const n8nCredentialData = {
       name: `Hubspot_${name || 'unknown'}_${email || 'unknown'}`,
-      // If you overrode this via env, keep it. Otherwise default works on most n8n builds.
-      type: process.env.N8N_HUBSPOT_CRED_TYPE || 'hubspotApi',
+      // hubspotAppToken is the correct type for Private App tokens (hubspotApi was deprecated Nov 2022)
+      type: process.env.N8N_HUBSPOT_CRED_TYPE || 'hubspotAppToken',
       data: {
-        appToken: appToken,       // <- correct key for App Token
-              // <- required by your schema (can be 'All' in UI)
+        appToken: appToken,
       },
     };
 
@@ -168,9 +215,8 @@ router.post('/streak', async (req, res) => {
       name: `Streak_${name}_${email}`,
       type: process.env.N8N_STREAK_CRED_TYPE || 'streakApi',
       data: {
-    apiKey: token,
-    allowedDomains: "*"
-  }
+        apiKey: token,
+      },
     };
 
     const saved = await saveCredentialToN8n(n8nCredentialData);
@@ -241,7 +287,6 @@ router.post('/callback', async (req, res) => {
         name: `Gmail_${state?.name || ''}_${state?.email || ''}`,
         type: process.env.N8N_GMAIL_CRED_TYPE || 'gmailOAuth2',
         data: {
-          allowedDomains: "All",
           clientId: process.env.GOOGLE_CLIENT_ID,
           clientSecret: process.env.GOOGLE_CLIENT_SECRET,
           oauthTokenData: {
@@ -251,8 +296,6 @@ router.post('/callback', async (req, res) => {
             token_type: tokens.token_type || 'Bearer',
             expires_in: tokens.expires_in,
           },
-          sendAdditionalBodyProperties: false,
-          additionalBodyProperties: {}
         },
       };
     }  else if (provider === 'outlook') {
@@ -274,15 +317,13 @@ router.post('/callback', async (req, res) => {
     return res.json({ success: false, message: 'Failed to get access token from Microsoft' });
   }
 
- n8nPayload = {
+  n8nPayload = {
     name: `Outlook_${state?.name || ''}_${state?.email || ''}`,
-    type: 'microsoftOAuth2Api', // This is the correct type
+    // microsoftOutlookOAuth2Api is the correct type for the Outlook node
+    type: 'microsoftOutlookOAuth2Api',
     data: {
       clientId: process.env.MS_CLIENT_ID,
       clientSecret: process.env.MS_CLIENT_SECRET,
-      // These are the EXACT field names n8n expects for Microsoft OAuth2
-      allowedDomains: "All", // Must be "All" (string), not "*"
-      // Remove userPrincipalName - it's not in the base credential
       oauthTokenData: {
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
@@ -290,8 +331,6 @@ router.post('/callback', async (req, res) => {
         token_type: tokens.token_type || 'Bearer',
         expires_in: tokens.expires_in,
       },
-      sendAdditionalBodyProperties: false,
-      additionalBodyProperties: {}
     },
   };
 }
@@ -299,9 +338,10 @@ router.post('/callback', async (req, res) => {
       return res.json({ success: false, message: 'Unknown provider in callback' });
     }
 
-    // Save to n8n
+    // OAuth2 credentials (Gmail, Outlook) must use the internal REST API because
+    // it accepts oauthTokenData — the public API's strict schema validation rejects it.
     try {
-      const saved = await saveCredentialToN8n(n8nPayload);
+      const saved = await saveCredentialViaInternalApi(n8nPayload);
       return res.json({
         success: true,
         message: `${provider} credentials saved successfully to n8n`,
