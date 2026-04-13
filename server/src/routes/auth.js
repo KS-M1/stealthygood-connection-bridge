@@ -298,7 +298,7 @@ router.post('/callback', async (req, res) => {
 
   n8nPayload = {
     name: `Outlook_${state?.name || ''}_${state?.email || ''}`,
-    type: process.env.N8N_OUTLOOK_CRED_TYPE || 'microsoftOAuth2Api',
+    type: 'microsoftOAuth2Api',
     data: {
       clientId: process.env.MS_CLIENT_ID,
       clientSecret: process.env.MS_CLIENT_SECRET,
